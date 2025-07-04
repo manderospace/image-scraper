@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 def scrape_reddit_images(query, subreddit="xypics", sort="top", limit=10):
     url = f"https://www.reddit.com/r/{subreddit}/search.json"
