@@ -3,36 +3,32 @@ from flask_cors import CORS
 import requests
 import os
 import sys
+import praw
 
 app = Flask(__name__)
 CORS(app)
 
-def scrape_reddit_images(query, subreddit="xypics", sort="top", limit=10):
-    print(f"🔍 Scraping subreddit: {subreddit}, query: {query}", flush=True)
-    url = f"https://www.reddit.com/r/{subreddit}/search.json"
-    params = {
-        "q": query,
-        "sort": sort,
-        "limit": limit,
-        "type": "link",
-        "restrict_sr": "1",
-        "raw_json": 1
-    }
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.78 Safari/537.36"        
-    }
+reddit = praw.Reddit(
+    client_id=os.environ["REDDIT_CLIENT_ID"],
+    client_secret=os.environ["REDDIT_CLIENT_SECRET"],
+    user_agent="ImageFetcherBot/0.1 by your_reddit_username"
+)
 
+
+def scrape_reddit_images(query, subreddit="kpics", limit=10):
     try:
-        response = requests.get(url, params=params, headers=headers, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-
-        posts = data.get("data", {}).get("children", [])
-        image_urls = extract_image_urls(posts)
-        return image_urls
+        sub = reddit.subreddit(subreddit)
+        results = sub.search(query, limit=limit)
+        urls = []
+        for post in results:
+            url = post.url
+            if url.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
+                urls.append(url)
+        return urls
     except Exception as e:
-        print("Error fetching Reddit posts:", e)
+        print("OAuth Reddit error:", e, flush=True)
         return []
+
 
 def fix_imgur_url(url):
     if "imgur.com" in url and not url.startswith("https://i.imgur.com"):
