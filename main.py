@@ -2,12 +2,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 import os
+import sys
 
 app = Flask(__name__)
 CORS(app)
 
 def scrape_reddit_images(query, subreddit="xypics", sort="top", limit=10):
-    print(f"🔍 Scraping subreddit: {subreddit}, query: {query}")
+    print(f"🔍 Scraping subreddit: {subreddit}, query: {query}", flush=True)
     url = f"https://www.reddit.com/r/{subreddit}/search.json"
     params = {
         "q": query,
@@ -56,12 +57,12 @@ def extract_image_urls(posts):
 
 @app.route("/search")
 def search():
-    print("🔥 /search route was hit!")
+    print("🔥 /search route was hit!", flush=True)
     query = request.args.get("query", "")
     subreddit = request.args.get("subreddit", "xypics")
-    print(f"Searching '{query}' in subreddit '{subreddit}'")
+    print(f"Searching '{query}' in subreddit '{subreddit}'", flush=True)
     images = scrape_reddit_images(query, subreddit)
-    print(f"Found {len(images)} images")
+    print(f"Found {len(images)} images", flush=True)
     return jsonify(images)
 
 if __name__ == "__main__":
