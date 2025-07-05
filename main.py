@@ -21,11 +21,13 @@ def scrape_reddit_images(query, subreddit="kpics", limit=10):
         results = sub.search(query, limit=limit)
         urls = []
         for post in results:
-            url = post["data"].get("url", "")
+            # Use dot notation to access PRAW Submission attributes
+            url = post.url
             if url.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
                 urls.append(fix_imgur_url(url))
-            elif "reddit.com/gallery/" in url and "media_metadata" in post["data"]:
-                media = post["data"]["media_metadata"]
+            elif "reddit.com/gallery/" in url and hasattr(post, 'media_metadata') and post.media_metadata:
+                # Access media_metadata directly as an attribute
+                media = post.media_metadata
                 if media:
                     first_image = next(iter(media.values()))
                     img_url = first_image["s"]["u"].replace("&amp;", "&")
