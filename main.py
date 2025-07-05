@@ -19,7 +19,7 @@ def scrape_reddit_images(query, subreddit="xypics", sort="top", limit=10):
         "raw_json": 1
     }
     headers = {
-        "User-Agent": "Mozilla/5.0 (Reddit Image Scraper)"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.78 Safari/537.36"        
     }
 
     try:
