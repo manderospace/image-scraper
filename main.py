@@ -13,7 +13,8 @@ def scrape_reddit_images(query, subreddit="xypics", sort="top", limit=10):
         "sort": sort,
         "limit": limit,
         "type": "link",
-        "restrict_sr": "1"
+        "restrict_sr": "1",
+        "raw_json": 1
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Reddit Image Scraper)"
@@ -56,7 +57,9 @@ def extract_image_urls(posts):
 def search():
     query = request.args.get("query", "")
     subreddit = request.args.get("subreddit", "xypics")
+    print(f"Searching '{query}' in subreddit '{subreddit}'")
     images = scrape_reddit_images(query, subreddit)
+    print(f"Found {len(images)} images")
     return jsonify(images)
 
 if __name__ == "__main__":
